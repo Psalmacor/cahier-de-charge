@@ -1,0 +1,812 @@
+% !TEX program = pdflatex
+% ============================================================================
+% Boilerplate LaTeX - Dossier professionnel / Cahier des charges
+% Remplace les placeholders entre crochets : [Nom du projet], [Client], etc.
+% Compilation conseillée : pdflatex dossier_professionnel_boilerplate.tex
+% ============================================================================
+
+\documentclass[11pt,a4paper]{report}
+
+% ----------------------------------------------------------------------------
+% Encodage, langue, mise en page
+% ----------------------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{geometry}
+\geometry{margin=2.4cm}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{parskip}
+
+% ----------------------------------------------------------------------------
+% Images, tableaux, liens, couleurs
+% ----------------------------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[most]{tcolorbox}
+\usepackage{lastpage}
+
+% ----------------------------------------------------------------------------
+% Configuration des liens PDF
+% ----------------------------------------------------------------------------
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black,
+  pdftitle={[Titre du dossier professionnel]},
+  pdfauthor={[Auteur]},
+  pdfsubject={[Sujet]},
+  pdfkeywords={[Mot-clé 1], [Mot-clé 2], [Mot-clé 3]}
+}
+
+% ----------------------------------------------------------------------------
+% Couleurs du document
+% ----------------------------------------------------------------------------
+\definecolor{maincolor}{HTML}{1F2937}
+\definecolor{accentcolor}{HTML}{2563EB}
+\definecolor{softgray}{HTML}{F3F4F6}
+\definecolor{midgray}{HTML}{6B7280}
+\definecolor{lightborder}{HTML}{D1D5DB}
+\definecolor{todoColor}{HTML}{B45309}
+\definecolor{placeholderColor}{HTML}{374151}
+
+% ----------------------------------------------------------------------------
+% En-têtes et pieds de page
+% ----------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small \documenttype}
+\rhead{\small \projectname}
+\cfoot{\small Page \thepage{} / \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ----------------------------------------------------------------------------
+% Style des titres
+% ----------------------------------------------------------------------------
+\titleformat{\chapter}
+  {\normalfont\Huge\bfseries\color{maincolor}}
+  {\thechapter.}{1em}{}
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{maincolor}}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{maincolor}}
+  {\thesubsection}{1em}{}
+
+% ----------------------------------------------------------------------------
+% Variables principales du dossier
+% ----------------------------------------------------------------------------
+\newcommand{\documenttype}{Cahier des charges}
+\newcommand{\projectname}{Psalmacor}
+\newcommand{\authorname}{Daniel Medina}
+\newcommand{\formationname}{Nom de la formation}
+\newcommand{\organizationname}{Organisme / entreprise}
+\newcommand{\versionnumber}{Version 1}
+\newcommand{\documentdate}{Date}
+\newcommand{\contactemail}{adresse@email.fr}
+
+% ----------------------------------------------------------------------------
+% Commandes réutilisables
+% ----------------------------------------------------------------------------
+\newcommand{\placeholder}[1]{\textcolor{placeholderColor}{\texttt{[#1]}}}
+\newcommand{\todo}[1]{\textcolor{todoColor}{\textbf{À compléter :} #1}}
+\newcommand{\keyword}[1]{\textbf{#1}}
+\newcommand{\important}[1]{\textbf{\color{accentcolor}#1}}
+\newcommand{\blankspace}[1]{\vspace*{#1}}
+
+% Page vide structurée, prête à remplir
+\newcommand{\pageapreenplir}[2]{%
+  \section{#1}
+  \begin{tcolorbox}[colback=softgray,colframe=lightborder,title=Zone à compléter]
+    #2
+  \end{tcolorbox}
+  \blankspace{12cm}
+}
+
+% Bloc texte standard
+\newtcolorbox{infobox}[1]{
+  colback=softgray,
+  colframe=accentcolor,
+  title=#1,
+  fonttitle=\bfseries
+}
+
+% Bloc décision
+\newtcolorbox{decisionbox}[1]{
+  colback=white,
+  colframe=maincolor,
+  title=Décision : #1,
+  fonttitle=\bfseries
+}
+
+% Bloc exigence / besoin
+\newtcolorbox{requirementbox}[1]{
+  colback=white,
+  colframe=accentcolor,
+  title=Besoin / exigence : #1,
+  fonttitle=\bfseries
+}
+
+% Image réelle avec légende
+% Usage : \imageaveclegende[0.85\linewidth]{chemin/image.png}{Légende}{fig:mon-label}
+\newcommand{\imageaveclegende}[4][0.85\linewidth]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=#1]{#2}
+    \caption{#3}
+    \label{#4}
+  \end{figure}
+}
+
+% Emplacement image vide avec légende
+% Usage : \imageplaceholder[0.85\linewidth]{6cm}{Légende}{fig:placeholder}
+\newcommand{\imageplaceholder}[4][0.85\linewidth]{%
+  \begin{figure}[H]
+    \centering
+    \fbox{%
+      \begin{minipage}[c][#2][c]{#1}
+        \centering
+        \textcolor{midgray}{\Large Emplacement image}\\[0.4cm]
+        \textcolor{midgray}{#3}
+      \end{minipage}%
+    }
+    \caption{#3}
+    \label{#4}
+  \end{figure}
+}
+
+% Deux images côte à côte
+% Usage : \deuximages{img1.png}{Légende 1}{fig:a}{img2.png}{Légende 2}{fig:b}
+\newcommand{\deuximages}[6]{%
+  \begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.47\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{#1}
+      \caption{#2}
+      \label{#3}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.47\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{#4}
+      \caption{#5}
+      \label{#6}
+    \end{subfigure}
+  \end{figure}
+}
+
+% Tableau simple clé / valeur
+\newenvironment{keyvaluetable}{%
+  \begin{tabular}{>{\bfseries}p{0.30\linewidth}p{0.55\linewidth}}
+}{%
+  \end{tabular}
+}
+
+% Ligne de tableau clé / valeur
+\newcommand{\kvrow}[2]{#1 & #2 \\\midrule}
+
+% ----------------------------------------------------------------------------
+% Début du document
+% ----------------------------------------------------------------------------
+\begin{document}
+
+% ----------------------------------------------------------------------------
+% Page de couverture
+% ----------------------------------------------------------------------------
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+
+  {\Huge\bfseries \documenttype \par}
+  \vspace{1cm}
+  {\LARGE\bfseries \projectname \par}
+
+  \vfill
+
+  \begin{tcolorbox}[colback=softgray,colframe=lightborder,width=0.85\linewidth]
+    \begin{keyvaluetable}
+      \kvrow{Auteur}{\authorname}
+      \kvrow{Formation}{\formationname}
+      \kvrow{Organisation}{\organizationname}
+      \kvrow{Version}{\versionnumber}
+      \kvrow{Date}{\documentdate}
+      \kvrow{Contact}{\contactemail}
+    \end{keyvaluetable}
+  \end{tcolorbox}
+
+  \vfill
+  {\small Document préparé dans le cadre de \placeholder{contexte du dossier}.}
+\end{titlepage}
+
+% ----------------------------------------------------------------------------
+% Historique des versions
+% ----------------------------------------------------------------------------
+\chapter*{Historique du document}
+\addcontentsline{toc}{chapter}{Historique du document}
+
+\begin{longtable}{p{0.15\linewidth}p{0.18\linewidth}p{0.22\linewidth}p{0.35\linewidth}}
+\toprule
+\textbf{Version} & \textbf{Date} & \textbf{Auteur} & \textbf{Modifications} \\
+\midrule
+\endhead
+0.1 & \placeholder{Date} & \placeholder{Nom} & Création du document. \\
+0.2 & \placeholder{Date} & \placeholder{Nom} & \placeholder{Description des modifications}. \\
+\bottomrule
+\end{longtable}
+
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\newpage
+
+% ============================================================================
+% INTRODUCTION
+% ============================================================================
+\chapter{Introduction}
+
+\section{Objet du document}
+\begin{infobox}{But de cette section}
+Présenter brièvement le rôle du dossier, son contexte de rédaction, son périmètre et les personnes concernées.
+\end{infobox}
+
+\todo{Décrire l'objet du dossier professionnel / cahier des charges.}
+\blankspace{6cm}
+
+\section{Présentation synthétique du projet}
+\todo{Résumer le projet en quelques paragraphes : activité, service, site ou produit à réaliser, valeur proposée.}
+\blankspace{8cm}
+
+\section{Méthodologie de rédaction}
+\todo{Indiquer la méthode suivie : entretiens, analyse de l'existant, étude concurrentielle, définition des besoins, arbitrages techniques.}
+\blankspace{6cm}
+
+% ============================================================================
+% PRÉSENTATION DÉTAILLÉE
+% ============================================================================
+\chapter{Présentation détaillée}
+
+\section{Présentation de l'activité}
+\todo{Décrire l'activité, son origine, son positionnement, son vocabulaire, son univers et ses services principaux.}
+\blankspace{8cm}
+
+\section{Présentation du produit ou service}
+\todo{Présenter le produit numérique ou le service à concevoir : site vitrine, espace de réservation, paiement, contenus, pages, tunnel utilisateur.}
+\blankspace{8cm}
+
+\section{Périmètre du projet}
+\begin{requirementbox}{Périmètre fonctionnel}
+Indiquer ce qui est inclus, ce qui est exclu et ce qui pourra être traité dans une version ultérieure.
+\end{requirementbox}
+
+\begin{itemize}[leftmargin=*]
+  \item Inclus : \placeholder{élément inclus 1}
+  \item Inclus : \placeholder{élément inclus 2}
+  \item Exclu : \placeholder{élément exclu 1}
+  \item Reporté : \placeholder{élément prévu pour une version future}
+\end{itemize}
+
+\blankspace{4cm}
+
+\section{Intervenants}
+\begin{longtable}{p{0.22\linewidth}p{0.22\linewidth}p{0.22\linewidth}p{0.24\linewidth}}
+\toprule
+\textbf{Nom} & \textbf{Rôle} & \textbf{Responsabilités} & \textbf{Contact} \\
+\midrule
+\endhead
+\placeholder{Nom} & \placeholder{Client} & \placeholder{Validation, contenu, décisions} & \placeholder{Email / téléphone} \\
+\placeholder{Nom} & \placeholder{Chef de projet} & \placeholder{Coordination, planning} & \placeholder{Email / téléphone} \\
+\placeholder{Nom} & \placeholder{Développeur} & \placeholder{Conception, intégration, tests} & \placeholder{Email / téléphone} \\
+\placeholder{Nom} & \placeholder{Référent pédagogique} & \placeholder{Suivi, validation pédagogique} & \placeholder{Email / téléphone} \\
+\bottomrule
+\caption{Liste des intervenants du projet.}
+\label{tab:intervenants}
+\end{longtable}
+
+% ============================================================================
+% CONTEXTE
+% ============================================================================
+\chapter{Contexte}
+
+\section{Contexte général}
+\todo{Décrire le contexte économique, social, culturel, pédagogique ou professionnel dans lequel le projet s'inscrit.}
+\blankspace{8cm}
+
+\section{Problématique}
+\todo{Formuler le problème principal auquel le projet doit répondre.}
+\blankspace{6cm}
+
+\section{Enjeux}
+\begin{itemize}[leftmargin=*]
+  \item Enjeu commercial : \placeholder{description}
+  \item Enjeu utilisateur : \placeholder{description}
+  \item Enjeu technique : \placeholder{description}
+  \item Enjeu organisationnel : \placeholder{description}
+  \item Enjeu légal ou réglementaire : \placeholder{description}
+\end{itemize}
+\blankspace{4cm}
+
+% ============================================================================
+% OBJECTIFS
+% ============================================================================
+\chapter{Objectifs}
+
+\section{Objectifs principaux}
+\begin{longtable}{p{0.12\linewidth}p{0.46\linewidth}p{0.32\linewidth}}
+\toprule
+\textbf{ID} & \textbf{Objectif} & \textbf{Indicateur de réussite} \\
+\midrule
+\endhead
+OBJ-01 & \placeholder{Objectif principal 1} & \placeholder{Indicateur mesurable} \\
+OBJ-02 & \placeholder{Objectif principal 2} & \placeholder{Indicateur mesurable} \\
+OBJ-03 & \placeholder{Objectif principal 3} & \placeholder{Indicateur mesurable} \\
+\bottomrule
+\caption{Objectifs principaux du projet.}
+\label{tab:objectifs}
+\end{longtable}
+
+\section{Objectifs secondaires}
+\todo{Lister les objectifs utiles mais non critiques.}
+\blankspace{6cm}
+
+\section{Critères de succès}
+\todo{Définir les critères permettant de considérer le projet comme terminé et exploitable.}
+\blankspace{6cm}
+
+% ============================================================================
+% CIBLE
+% ============================================================================
+\chapter{Cible}
+
+\section{Public cible}
+\todo{Décrire le ou les publics visés : âge, besoins, niveau numérique, attentes, freins, motivations.}
+\blankspace{7cm}
+
+\section{Personas}
+\begin{longtable}{p{0.18\linewidth}p{0.22\linewidth}p{0.26\linewidth}p{0.24\linewidth}}
+\toprule
+\textbf{Persona} & \textbf{Profil} & \textbf{Besoins} & \textbf{Freins} \\
+\midrule
+\endhead
+\placeholder{Persona 1} & \placeholder{Âge, contexte} & \placeholder{Besoins principaux} & \placeholder{Freins principaux} \\
+\placeholder{Persona 2} & \placeholder{Âge, contexte} & \placeholder{Besoins principaux} & \placeholder{Freins principaux} \\
+\placeholder{Persona 3} & \placeholder{Âge, contexte} & \placeholder{Besoins principaux} & \placeholder{Freins principaux} \\
+\bottomrule
+\caption{Personas représentatifs de la cible.}
+\label{tab:personas}
+\end{longtable}
+
+\section{Parcours utilisateur type}
+\todo{Décrire les étapes suivies par un utilisateur depuis la découverte du service jusqu'à l'action attendue.}
+\blankspace{7cm}
+
+% ============================================================================
+% CONCURRENCE
+% ============================================================================
+\chapter{Concurrence}
+
+\section{Identification des concurrents}
+\begin{longtable}{p{0.22\linewidth}p{0.25\linewidth}p{0.25\linewidth}p{0.18\linewidth}}
+\toprule
+\textbf{Concurrent} & \textbf{Positionnement} & \textbf{Forces / faiblesses} & \textbf{Lien} \\
+\midrule
+\endhead
+\placeholder{Concurrent 1} & \placeholder{Positionnement} & \placeholder{Forces et faiblesses} & \placeholder{URL} \\
+\placeholder{Concurrent 2} & \placeholder{Positionnement} & \placeholder{Forces et faiblesses} & \placeholder{URL} \\
+\placeholder{Concurrent 3} & \placeholder{Positionnement} & \placeholder{Forces et faiblesses} & \placeholder{URL} \\
+\bottomrule
+\caption{Analyse synthétique de la concurrence.}
+\label{tab:concurrence}
+\end{longtable}
+
+\section{Benchmark visuel et fonctionnel}
+\todo{Comparer les choix graphiques, les contenus, les fonctionnalités, les tunnels de conversion et les points de différenciation.}
+
+\imageplaceholder{7cm}{Capture d'écran ou benchmark visuel à insérer}{fig:benchmark-placeholder}
+
+\section{Positionnement différenciant}
+\todo{Expliquer ce qui différencie le projet : ton, identité, offre, expérience, prix, accessibilité, proximité, spécialisation.}
+\blankspace{6cm}
+
+% ============================================================================
+% ANALYSE MARKETING
+% ============================================================================
+\chapter{Analyse marketing}
+
+\section{Proposition de valeur}
+\begin{infobox}{Formulation de la proposition de valeur}
+\placeholder{Pour [cible], le projet [nom] permet de [bénéfice principal] grâce à [différenciation].}
+\end{infobox}
+\blankspace{5cm}
+
+\section{Analyse SWOT}
+\begin{longtable}{p{0.23\linewidth}p{0.23\linewidth}p{0.23\linewidth}p{0.23\linewidth}}
+\toprule
+\textbf{Forces} & \textbf{Faiblesses} & \textbf{Opportunités} & \textbf{Menaces} \\
+\midrule
+\endhead
+\placeholder{Force 1} & \placeholder{Faiblesse 1} & \placeholder{Opportunité 1} & \placeholder{Menace 1} \\
+\placeholder{Force 2} & \placeholder{Faiblesse 2} & \placeholder{Opportunité 2} & \placeholder{Menace 2} \\
+\placeholder{Force 3} & \placeholder{Faiblesse 3} & \placeholder{Opportunité 3} & \placeholder{Menace 3} \\
+\bottomrule
+\caption{Analyse SWOT du projet.}
+\label{tab:swot}
+\end{longtable}
+
+\section{Stratégie de communication}
+\todo{Décrire les canaux : référencement naturel, réseaux sociaux, newsletter, bouche-à-oreille, partenariats, contenus éditoriaux.}
+\blankspace{6cm}
+
+\section{Objectifs de conversion}
+\begin{longtable}{p{0.18\linewidth}p{0.35\linewidth}p{0.35\linewidth}}
+\toprule
+\textbf{Action} & \textbf{Objectif} & \textbf{Mesure} \\
+\midrule
+\endhead
+\placeholder{Contact} & \placeholder{Obtenir des demandes qualifiées} & \placeholder{Nombre de formulaires envoyés} \\
+\placeholder{Réservation} & \placeholder{Convertir les visiteurs en clients} & \placeholder{Nombre de réservations} \\
+\placeholder{Inscription} & \placeholder{Construire une audience} & \placeholder{Nombre d'inscriptions} \\
+\bottomrule
+\caption{Actions de conversion attendues.}
+\label{tab:conversion}
+\end{longtable}
+
+% ============================================================================
+% DÉFINITION DES BESOINS
+% ============================================================================
+\chapter{Définition des besoins}
+
+\section{Étude de l'existant}
+\todo{Décrire l'existant : supports actuels, outils utilisés, limites, contenus disponibles, contraintes déjà identifiées.}
+\blankspace{8cm}
+
+\section{Énoncé du besoin}
+\begin{requirementbox}{Besoin général}
+\placeholder{Le commanditaire souhaite disposer de [solution] afin de [objectif], pour [cible], dans le respect de [contraintes principales].}
+\end{requirementbox}
+\blankspace{5cm}
+
+\section{Besoins fonctionnels}
+\begin{longtable}{p{0.13\linewidth}p{0.38\linewidth}p{0.18\linewidth}p{0.21\linewidth}}
+\toprule
+\textbf{ID} & \textbf{Besoin} & \textbf{Priorité} & \textbf{Critère d'acceptation} \\
+\midrule
+\endhead
+BF-01 & \placeholder{Afficher une page de présentation} & Must & \placeholder{Critère vérifiable} \\
+BF-02 & \placeholder{Afficher une offre ou un service} & Must & \placeholder{Critère vérifiable} \\
+BF-03 & \placeholder{Permettre la prise de contact} & Must & \placeholder{Critère vérifiable} \\
+BF-04 & \placeholder{Permettre la réservation} & Should & \placeholder{Critère vérifiable} \\
+BF-05 & \placeholder{Gérer des contenus administrables} & Could & \placeholder{Critère vérifiable} \\
+\bottomrule
+\caption{Liste des besoins fonctionnels.}
+\label{tab:besoins-fonctionnels}
+\end{longtable}
+
+\section{Besoins non fonctionnels}
+\begin{longtable}{p{0.13\linewidth}p{0.38\linewidth}p{0.18\linewidth}p{0.21\linewidth}}
+\toprule
+\textbf{ID} & \textbf{Besoin} & \textbf{Priorité} & \textbf{Critère d'acceptation} \\
+\midrule
+\endhead
+BNF-01 & \placeholder{Performance} & Must & \placeholder{Temps de chargement cible} \\
+BNF-02 & \placeholder{Accessibilité} & Must & \placeholder{Niveau attendu} \\
+BNF-03 & \placeholder{Sécurité} & Must & \placeholder{Mesure attendue} \\
+BNF-04 & \placeholder{Maintenabilité} & Should & \placeholder{Structure documentaire} \\
+BNF-05 & \placeholder{Compatibilité mobile} & Must & \placeholder{Affichage responsive} \\
+\bottomrule
+\caption{Liste des besoins non fonctionnels.}
+\label{tab:besoins-non-fonctionnels}
+\end{longtable}
+
+% ============================================================================
+% FONCTIONS DU PRODUIT
+% ============================================================================
+\chapter{Les fonctions du produit}
+
+\section{Fonctions principales}
+\begin{longtable}{p{0.12\linewidth}p{0.30\linewidth}p{0.30\linewidth}p{0.18\linewidth}}
+\toprule
+\textbf{ID} & \textbf{Fonction} & \textbf{Description} & \textbf{Priorité} \\
+\midrule
+\endhead
+F-01 & \placeholder{Page d'accueil} & \placeholder{Présenter l'activité et orienter l'utilisateur} & Must \\
+F-02 & \placeholder{Pages services} & \placeholder{Présenter les offres disponibles} & Must \\
+F-03 & \placeholder{Contact} & \placeholder{Permettre à l'utilisateur de contacter le prestataire} & Must \\
+F-04 & \placeholder{Réservation} & \placeholder{Permettre la demande ou validation d'une réservation} & Should \\
+F-05 & \placeholder{Administration} & \placeholder{Modifier certains contenus} & Could \\
+\bottomrule
+\caption{Fonctions principales du produit.}
+\label{tab:fonctions-principales}
+\end{longtable}
+
+\section{User stories}
+\begin{longtable}{p{0.12\linewidth}p{0.68\linewidth}p{0.12\linewidth}}
+\toprule
+\textbf{ID} & \textbf{User story} & \textbf{Priorité} \\
+\midrule
+\endhead
+US-01 & En tant que \placeholder{type d'utilisateur}, je veux \placeholder{action}, afin de \placeholder{bénéfice}. & Must \\
+US-02 & En tant que \placeholder{type d'utilisateur}, je veux \placeholder{action}, afin de \placeholder{bénéfice}. & Should \\
+US-03 & En tant que \placeholder{type d'utilisateur}, je veux \placeholder{action}, afin de \placeholder{bénéfice}. & Could \\
+\bottomrule
+\caption{User stories du projet.}
+\label{tab:user-stories}
+\end{longtable}
+
+\section{Arborescence prévue}
+\todo{Décrire les pages et leur organisation.}
+\begin{itemize}[leftmargin=*]
+  \item Accueil
+  \item Présentation
+  \item Services
+  \begin{itemize}
+    \item \placeholder{Service 1}
+    \item \placeholder{Service 2}
+    \item \placeholder{Service 3}
+  \end{itemize}
+  \item À propos / intervenants
+  \item Contact
+  \item Mentions légales
+  \item Politique de confidentialité
+\end{itemize}
+\blankspace{4cm}
+
+\section{Maquettes et zoning}
+\imageplaceholder{8cm}{Zoning de la page d'accueil}{fig:zoning-accueil}
+\imageplaceholder{8cm}{Maquette ou wireframe d'une page service}{fig:wireframe-service}
+
+% ============================================================================
+% CONTRAINTES
+% ============================================================================
+\chapter{Les contraintes}
+
+\section{Contraintes techniques}
+\begin{longtable}{p{0.18\linewidth}p{0.38\linewidth}p{0.34\linewidth}}
+\toprule
+\textbf{Catégorie} & \textbf{Contrainte} & \textbf{Impact / solution prévue} \\
+\midrule
+\endhead
+Hébergement & \placeholder{Hébergement, nom de domaine, SSL} & \placeholder{Impact et choix technique} \\
+Compatibilité & \placeholder{Navigateurs, mobile, tablette} & \placeholder{Responsive design et tests} \\
+Performance & \placeholder{Temps de chargement attendu} & \placeholder{Optimisation images, cache} \\
+Sécurité & \placeholder{Formulaire, données, accès} & \placeholder{Validation, HTTPS, protections} \\
+Maintenance & \placeholder{Mises à jour, documentation} & \placeholder{Procédure prévue} \\
+\bottomrule
+\caption{Contraintes techniques.}
+\label{tab:contraintes-techniques}
+\end{longtable}
+
+\section{Contraintes légales et réglementaires}
+\begin{longtable}{p{0.24\linewidth}p{0.36\linewidth}p{0.30\linewidth}}
+\toprule
+\textbf{Sujet} & \textbf{Obligation / point de vigilance} & \textbf{Action prévue} \\
+\midrule
+\endhead
+Mentions légales & \placeholder{Informations éditeur, hébergeur} & \placeholder{Page dédiée} \\
+RGPD & \placeholder{Données collectées, finalité, durée} & \placeholder{Politique de confidentialité} \\
+Cookies & \placeholder{Cookies strictement nécessaires ou mesure d'audience} & \placeholder{Bandeau ou information} \\
+Accessibilité & \placeholder{Lisibilité, navigation clavier, alternatives textuelles} & \placeholder{Bonnes pratiques WCAG} \\
+Droit d'auteur & \placeholder{Images, textes, polices, contenus} & \placeholder{Licences et crédits} \\
+\bottomrule
+\caption{Contraintes légales et réglementaires.}
+\label{tab:contraintes-legales}
+\end{longtable}
+
+\section{Contraintes de coûts}
+\todo{Indiquer les limites budgétaires, les coûts prévus, les arbitrages et les coûts récurrents.}
+\blankspace{6cm}
+
+\section{Contraintes de délais}
+\todo{Indiquer les échéances, jalons, dates de validation, dépendances et marges de sécurité.}
+\blankspace{6cm}
+
+\section{Contraintes graphiques et éditoriales}
+\todo{Décrire l'identité visuelle, le ton éditorial, les couleurs, les typographies, les images et les contenus à fournir.}
+\blankspace{6cm}
+
+% ============================================================================
+% DÉROULEMENT DU PROJET
+% ============================================================================
+\chapter{Déroulement du projet}
+
+\section{Organisation générale}
+\todo{Décrire les étapes du projet, les méthodes de validation, les outils de suivi et les règles d'échange.}
+\blankspace{7cm}
+
+\section{Phasage}
+\begin{longtable}{p{0.12\linewidth}p{0.28\linewidth}p{0.38\linewidth}p{0.12\linewidth}}
+\toprule
+\textbf{Phase} & \textbf{Nom} & \textbf{Contenu} & \textbf{Statut} \\
+\midrule
+\endhead
+1 & Analyse & \placeholder{Recueil des besoins, analyse concurrence, cible} & \placeholder{À faire} \\
+2 & Conception & \placeholder{Arborescence, wireframes, choix techniques} & \placeholder{À faire} \\
+3 & Réalisation & \placeholder{Développement, intégration, contenus} & \placeholder{À faire} \\
+4 & Tests & \placeholder{Tests fonctionnels, responsive, accessibilité} & \placeholder{À faire} \\
+5 & Livraison & \placeholder{Mise en ligne, documentation, recette} & \placeholder{À faire} \\
+\bottomrule
+\caption{Phases du projet.}
+\label{tab:phasage}
+\end{longtable}
+
+\section{Planning prévisionnel}
+\begin{longtable}{p{0.18\linewidth}p{0.18\linewidth}p{0.18\linewidth}p{0.34\linewidth}}
+\toprule
+\textbf{Tâche} & \textbf{Début} & \textbf{Fin} & \textbf{Livrable ou validation} \\
+\midrule
+\endhead
+\placeholder{Analyse} & \placeholder{Date} & \placeholder{Date} & \placeholder{Document d'analyse} \\
+\placeholder{Maquettes} & \placeholder{Date} & \placeholder{Date} & \placeholder{Wireframes validés} \\
+\placeholder{Développement} & \placeholder{Date} & \placeholder{Date} & \placeholder{Version testable} \\
+\placeholder{Tests} & \placeholder{Date} & \placeholder{Date} & \placeholder{Recette} \\
+\placeholder{Livraison} & \placeholder{Date} & \placeholder{Date} & \placeholder{Mise en production} \\
+\bottomrule
+\caption{Planning prévisionnel.}
+\label{tab:planning}
+\end{longtable}
+
+\section{Gestion des risques}
+\begin{longtable}{p{0.22\linewidth}p{0.18\linewidth}p{0.18\linewidth}p{0.32\linewidth}}
+\toprule
+\textbf{Risque} & \textbf{Probabilité} & \textbf{Impact} & \textbf{Mesure prévue} \\
+\midrule
+\endhead
+\placeholder{Retard contenu} & \placeholder{Moyenne} & \placeholder{Fort} & \placeholder{Prévoir une date limite de fourniture} \\
+\placeholder{Changement de périmètre} & \placeholder{Moyenne} & \placeholder{Moyen} & \placeholder{Valider les demandes par écrit} \\
+\placeholder{Problème technique} & \placeholder{Faible} & \placeholder{Fort} & \placeholder{Prévoir solution alternative} \\
+\bottomrule
+\caption{Matrice simplifiée des risques.}
+\label{tab:risques}
+\end{longtable}
+
+% ============================================================================
+% LIVRABLES
+% ============================================================================
+\chapter{Livrables}
+
+\section{Liste des livrables}
+\begin{longtable}{p{0.14\linewidth}p{0.34\linewidth}p{0.20\linewidth}p{0.22\linewidth}}
+\toprule
+\textbf{ID} & \textbf{Livrable} & \textbf{Format} & \textbf{Critère de validation} \\
+\midrule
+\endhead
+LIV-01 & \placeholder{Cahier des charges} & PDF / TEX & \placeholder{Validé par le commanditaire} \\
+LIV-02 & \placeholder{Maquettes} & PNG / PDF / Figma & \placeholder{Maquettes validées} \\
+LIV-03 & \placeholder{Code source} & Dépôt Git & \placeholder{Code versionné} \\
+LIV-04 & \placeholder{Site livré} & URL & \placeholder{Site accessible} \\
+LIV-05 & \placeholder{Documentation} & PDF / Markdown & \placeholder{Procédure claire} \\
+\bottomrule
+\caption{Livrables attendus.}
+\label{tab:livrables}
+\end{longtable}
+
+\section{Procédure de recette}
+\todo{Décrire comment le projet sera testé et validé : liste des tests, retours, corrections, validation finale.}
+\blankspace{7cm}
+
+% ============================================================================
+% DEVIS
+% ============================================================================
+\chapter{Devis}
+
+\section{Hypothèses de chiffrage}
+\todo{Indiquer les hypothèses retenues pour le devis : périmètre, nombre de pages, fonctionnalités, délais, exclusions.}
+\blankspace{5cm}
+
+\section{Estimation des coûts}
+\begin{longtable}{p{0.42\linewidth}p{0.14\linewidth}p{0.16\linewidth}p{0.18\linewidth}}
+\toprule
+\textbf{Poste} & \textbf{Quantité} & \textbf{Prix unitaire} & \textbf{Total} \\
+\midrule
+\endhead
+Analyse et cadrage & \placeholder{X h} & \placeholder{X €} & \placeholder{X €} \\
+Conception UX / UI & \placeholder{X h} & \placeholder{X €} & \placeholder{X €} \\
+Développement front-end & \placeholder{X h} & \placeholder{X €} & \placeholder{X €} \\
+Développement back-end & \placeholder{X h} & \placeholder{X €} & \placeholder{X €} \\
+Intégration contenus & \placeholder{X h} & \placeholder{X €} & \placeholder{X €} \\
+Tests et corrections & \placeholder{X h} & \placeholder{X €} & \placeholder{X €} \\
+Mise en ligne & \placeholder{X h} & \placeholder{X €} & \placeholder{X €} \\
+Maintenance optionnelle & \placeholder{X mois} & \placeholder{X €} & \placeholder{X €} \\
+\midrule
+\textbf{Total HT} & & & \placeholder{X €} \\
+\textbf{TVA} & & & \placeholder{X €} \\
+\textbf{Total TTC} & & & \placeholder{X €} \\
+\bottomrule
+\caption{Estimation budgétaire du projet.}
+\label{tab:devis}
+\end{longtable}
+
+\section{Coûts récurrents}
+\begin{longtable}{p{0.36\linewidth}p{0.22\linewidth}p{0.32\linewidth}}
+\toprule
+\textbf{Poste} & \textbf{Coût estimé} & \textbf{Fréquence} \\
+\midrule
+\endhead
+Nom de domaine & \placeholder{X €} & Annuel \\
+Hébergement & \placeholder{X €} & Mensuel / annuel \\
+Outils tiers & \placeholder{X €} & Mensuel / annuel \\
+Maintenance & \placeholder{X €} & Mensuel / ponctuel \\
+\bottomrule
+\caption{Coûts récurrents prévisionnels.}
+\label{tab:couts-recurrents}
+\end{longtable}
+
+% ============================================================================
+% ANNEXES
+% ============================================================================
+\appendix
+\chapter{Annexes}
+
+\section{Glossaire}
+\begin{longtable}{p{0.26\linewidth}p{0.64\linewidth}}
+\toprule
+\textbf{Terme} & \textbf{Définition} \\
+\midrule
+\endhead
+\placeholder{Terme 1} & \placeholder{Définition} \\
+\placeholder{Terme 2} & \placeholder{Définition} \\
+\placeholder{Terme 3} & \placeholder{Définition} \\
+\bottomrule
+\caption{Glossaire du projet.}
+\label{tab:glossaire}
+\end{longtable}
+
+\section{Sources et références}
+\begin{longtable}{p{0.32\linewidth}p{0.46\linewidth}p{0.12\linewidth}}
+\toprule
+\textbf{Source} & \textbf{Utilisation} & \textbf{Date} \\
+\midrule
+\endhead
+\placeholder{Nom de la source} & \placeholder{Pourquoi cette source est utilisée} & \placeholder{Date} \\
+\placeholder{Nom de la source} & \placeholder{Pourquoi cette source est utilisée} & \placeholder{Date} \\
+\bottomrule
+\caption{Sources et références utilisées.}
+\label{tab:sources}
+\end{longtable}
+
+\section{Captures d'écran}
+\imageplaceholder{7cm}{Capture d'écran 1 à insérer}{fig:annexe-capture-1}
+\imageplaceholder{7cm}{Capture d'écran 2 à insérer}{fig:annexe-capture-2}
+
+\section{Exemples de blocs réutilisables}
+
+\begin{infobox}{Exemple de bloc d'information}
+Ce bloc peut servir à présenter une précision, une hypothèse, une synthèse ou un rappel important.
+\end{infobox}
+
+\begin{decisionbox}{Nom de la décision}
+\textbf{Contexte :} \placeholder{Contexte de la décision.}\\
+\textbf{Décision retenue :} \placeholder{Choix retenu.}\\
+\textbf{Justification :} \placeholder{Raison du choix.}
+\end{decisionbox}
+
+\begin{requirementbox}{Identifiant du besoin}
+\textbf{Description :} \placeholder{Décrire le besoin.}\\
+\textbf{Priorité :} \placeholder{Must / Should / Could / Won't.}\\
+\textbf{Critère d'acceptation :} \placeholder{Condition vérifiable.}
+\end{requirementbox}
+
+\section{Page libre}
+\todo{Utiliser cette page pour ajouter des schémas, notes, captures, comptes rendus ou éléments complémentaires.}
+\blankspace{14cm}
+
+\end{document}
